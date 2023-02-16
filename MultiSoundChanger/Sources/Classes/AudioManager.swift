@@ -85,14 +85,27 @@ final class AudioManagerImpl: AudioManager {
         if audio.isAggregateDevice(deviceID: selectedDevice) {
             let aggregatedDevices = audio.getAggregateDeviceSubDeviceList(deviceID: selectedDevice)
             
+            let primaryName = "HyperX Cloud II Wireless"
+            var primaryFound = false
+            
             for device in aggregatedDevices {
-                audio.setDeviceVolume(
-                    deviceID: device,
-                    masterChannelLevel: masterChannelLevel,
-                    leftChannelLevel: leftChannelLevel,
-                    rightChannelLevel: rightChannelLevel
-                )
-                audio.setDeviceMute(deviceID: device, isMute: isMute)
+                let name = audio.getDeviceName(deviceID: device)
+                if name == primaryName {
+                    primaryFound = true
+                }
+            }
+            
+            for device in aggregatedDevices {
+                let name = audio.getDeviceName(deviceID: device)
+                if name == primaryName || !primaryFound {
+                    audio.setDeviceVolume(
+                        deviceID: device,
+                        masterChannelLevel: masterChannelLevel,
+                        leftChannelLevel: leftChannelLevel,
+                        rightChannelLevel: rightChannelLevel
+                    )
+                    audio.setDeviceMute(deviceID: device, isMute: isMute)
+                }
             }
         } else {
             audio.setDeviceVolume(
